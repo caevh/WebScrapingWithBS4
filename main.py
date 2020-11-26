@@ -1,13 +1,21 @@
 from bs4 import BeautifulSoup
+import requests
 
-with open('index.html', 'r') as html_file:
-    content = html_file.read()
+html_text = requests.get('https://www.indeed.co.uk/jobs?q=python&sort=date').text # Asigns all html text
 
-    soup = BeautifulSoup(content, 'lxml') 
-    course_cards = soup.find_all('div', class_='card')
+soup = BeautifulSoup(html_text, 'lxml')
+job = soup.find('div', class_='jobsearch-SerpJobCard')
+company_name = job.find('span', class_='company').text # used to return just the comany name
+skills = job.find('div', class_='jobCardReqList')
+published_date = job.find('span', class_='date').text
 
-    for course in course_cards:
-        course_name = course.h5.text
-        course_price = course.a.text.split()[-1]
+if skills == None:
+    print(f"""Company Name: {company_name}
+Minimal requirements: None specified""")
+else:
+    print(f"""Company Name: {company_name} 
+Minimal requirements: {skills.text}""")
 
-        print(f'{course_name} costs {course_price}'')
+print(published_date)
+
+    

@@ -1,4 +1,4 @@
-**Part 1**
+**Part 1: Scraping from a local HTML file**
 
 First import beautiful soup like;
 `from bs4 import BeautifulSoup`
@@ -69,3 +69,44 @@ Python for beginners costs 20$
 Python Web Development costs 50$
 Python Machine Learning costs 00$
 ```
+
+**Part 3: Scraping from a real site**
+We're now going to scrape from a real site. For the site, I chose https://www.indeed.co.uk the reason? Because my code eventually will look for jobs recently posted under a certain title, I chose "Python". 
+
+First, I went to the site and typed Python in the search bar until a list of jobs were posted, from here I sorted by new. 
+
+The first thing we need to make sure is the requests library is installed. Do this using pip, `pip install requests`. For me, I used a requirements.txt file with all my dependencies in and a virtual env. 
+
+The finished code for this section will look like this;
+
+```
+from bs4 import BeautifulSoup
+import requests
+
+html_text = requests.get('https://www.indeed.co.uk/jobs?q=python&sort=date').text # Asigns all html text
+
+soup = BeautifulSoup(html_text, 'lxml')
+job = soup.find('div', class_='jobsearch-SerpJobCard')
+company_name = job.find('span', class_='company').text # used to return just the comany name
+skills = job.find('div', class_='jobCardReqList')
+published_date = job.find('span', class_='date').text
+
+if skills == None:
+    print(f"""Company Name: {company_name}
+Minimal requirements: None specified""")
+else:
+    print(f"""Company Name: {company_name} 
+Minimal requirements: {skills.text}""")
+```
+
+- We import all the libraries we need.
+- A `html_text` variable is created. We then use request and get to get all the HTML from the URL provided. 
+	- `.text` is used so, the HTML will be assigned to the variable. Without the text, it will display something like `<Response [200]>`
+- We then do the same as before and create the soup object
+- Next, the job variable is created. This is used to see individual job cards. 
+	- `soup.find' searches for the 'div' element, it then searched for the class `jobsearch-SerpJobCard` 
+	- To find this out, I right-clicked on the card and clicked inspect and searched until I found an element and class that is associated with the job card. 
+- I then create the variables `company_name` and inspect the HTML until I find the element and class associated. the same is done for `skills` and `published_date`
+- An `if-else` statement is written as I found some jobs did not specify any requirements implicitly on the home page job card.  
+	- The statement checks if `skills` is equal to `None` it assumes no requirements specified else, tells you the requirements. 
+- The `published_date` will be used later on when checking the age of a posting. 
