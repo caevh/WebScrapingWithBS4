@@ -23,6 +23,7 @@ with open('index.html', 'r') as html_file:
 * * *
 
 **Part 2**
+
 To get the price we have to find all of the `div' tags as this is where the the card body elements are inside it. 
 
 ```
