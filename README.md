@@ -71,6 +71,7 @@ Python Machine Learning costs 00$
 ```
 
 **Part 3: Scraping from a real site**
+
 We're now going to scrape from a real site. For the site, I chose https://www.indeed.co.uk the reason? Because my code eventually will look for jobs recently posted under a certain title, I chose "Python". 
 
 First, I went to the site and typed Python in the search bar until a list of jobs were posted, from here I sorted by new. 
