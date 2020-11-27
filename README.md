@@ -178,3 +178,56 @@ Minimal requirements: None specified
 - In the for loop, we use the `published_date` variable to store the publish date of a post.
 - next, we add an `if` statement to check if `just` is specified in the `publish_date` variable if it is, we print the job. 
 
+* * *
+**Part 5: Adding a URL**
+In this section, we will add a URL. 
+
+The finished code:
+```
+from bs4 import BeautifulSoup
+import requests
+
+html_text = requests.get('https://www.indeed.co.uk/jobs?q=python&sort=date').text # Asigns all html text
+
+soup = BeautifulSoup(html_text, 'lxml')
+jobs = soup.find_all('div', class_='jobsearch-SerpJobCard')
+for job in jobs:
+    published_date = job.find('span', class_='date').text
+    if 'Just' in published_date: 
+        company_name = job.find('span', class_='company').text # used to return just the comany name
+        skills = job.find('div', class_='jobCardReqList')
+        more_info = job.a['href']
+        job_url = 'https://www.indeed.co.uk/viewjob?' + more_info[8:] 
+    
+
+        if skills == None:
+            print(f"Company Name: {company_name.strip()}")
+            print(f"Required Skills: None specified")
+            print(f"More Info: {job_url}")
+        else:
+            print(f"Company Name: {company_name.strip()}")
+            print(f"Required Skills: {skills.strip()}")
+            print(f"More Info: {job_url}")
+            
+
+        
+        print(' ')
+```
+
+Additions to code;
+```
+for job in jobs:
+    published_date = job.find('span', class_='date').text
+    if 'Just' in published_date: 
+        company_name = job.find('span', class_='company').text # used to return just the comany name
+        skills = job.find('div', class_='jobCardReqList')
+        more_info = job.a['href']
+        job_url = 'https://www.indeed.co.uk/viewjob?' + more_info[8:] 
+```
+
+- We added the variable `more_info`. This is assigned the value of `job.a['href']`. 
+	- In this code, we use the `job.a` to get the `a` tag inside the job URL. The reason for this is because the `href` (URL) is stored inside this tag. 
+	- We then use `['href']` to return just the value of `href`
+- `job_url` is created because the link that is given didn't seem to work when not accessed from VS code.
+	- The link was missing the string that has been added in the code. 
+	- `more_info[8:]` is used because we only need to access a part of the link that was given, not the whole link, to get it to work

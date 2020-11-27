@@ -10,19 +10,24 @@ for job in jobs:
     if 'Just' in published_date: 
         company_name = job.find('span', class_='company').text # used to return just the comany name
         skills = job.find('div', class_='jobCardReqList')
+        more_info = job.a['href']
+        job_url = 'https://www.indeed.co.uk/viewjob?' + more_info[8:] 
     
 
         if skills == None:
-            print(f"""Company Name:{company_name}
-
-Minimal requirements: None specified
-        """)
+            print(f"Company Name: {company_name.strip()}")
+            print(f"Required Skills: None specified")
+            print(f"More Info: {job_url}")
         else:
-            print(f"""Company Name: {company_name} 
-        Minimal requirements: {skills.text}""")
+            print(f"Company Name: {company_name.strip()}")
+            print(f"Required Skills: {skills.strip()}")
+            print(f"More Info: {job_url}")
+            
 
         
-
         print(' ')
+        
+
+            
 
     
