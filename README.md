@@ -69,6 +69,7 @@ Python for beginners costs 20$
 Python Web Development costs 50$
 Python Machine Learning costs 00$
 ```
+* * *
 
 **Part 3: Scraping from a real site**
 
@@ -111,3 +112,69 @@ Minimal requirements: {skills.text}""")
 - An `if-else` statement is written as I found some jobs did not specify any requirements implicitly on the home page job card.  
 	- The statement checks if `skills` is equal to `None` it assumes no requirements specified else, tells you the requirements. 
 - The `published_date` will be used later on when checking the age of a posting. 
+
+* * *
+
+**Part 4**
+
+Using `find_all` to find all matching jobs and filtering for a certain time posted.
+
+The finished code:
+```
+from bs4 import BeautifulSoup
+import requests
+
+html_text = requests.get('https://www.indeed.co.uk/jobs?q=python&sort=date').text # Asigns all html text
+
+soup = BeautifulSoup(html_text, 'lxml')
+jobs = soup.find_all('div', class_='jobsearch-SerpJobCard')
+for job in jobs:
+    published_date = job.find('span', class_='date').text
+    if 'Just' in published_date: 
+        company_name = job.find('span', class_='company').text # used to return just the comany name
+        skills = job.find('div', class_='jobCardReqList')
+    
+
+        if skills == None:
+            print(f"""Company Name:{company_name}
+
+Minimal requirements: None specified
+        """)
+        else:
+            print(f"""Company Name: {company_name} 
+        Minimal requirements: {skills.text}""")
+
+        
+
+        print(' ')
+```
+
+Additions/edits to the code;
+```
+jobs = soup.find_all('div', class_='date').text class_='jobsearch-SerpJobCard')
+for job in jobs:
+    published_date = job.find('span', class_='date').text
+    if 'Just' in published_date: 
+        company_name = job.find('span', class_='company').text # used to return just the comany name
+        skills = job.find('div', class_='jobCardReqList')
+    
+
+        if skills == None:
+            print(f"""Company Name:{company_name}
+
+Minimal requirements: None specified
+        """)
+        else:
+            print(f"""Company Name: {company_name} 
+        Minimal requirements: {skills.text}""")
+
+        
+
+        print(' ')
+```
+
+- First, `soup.find_all` is added to find all job posts that fall under our specified tags and class.
+- next, we use a for loop to loop through the job posts. These are stored in an iterable list.
+- In the for loop, we use the `published_date` variable to store the publish date of a post.
+- next, we add an `if` statement to check if `just` is specified in the `publish_date` variable if it is, we print the job. 
+
