@@ -232,3 +232,67 @@ for job in jobs:
 - `job_url` is created because the link that is given didn't seem to work when not accessed from VS code.
 	- The link was missing the string that has been added in the code. 
 	- `more_info[8:]` is used because we only need to access a part of the link that was given, not the whole link, to get it to work
+
+* * *
+**Part 6: User input filtering**
+
+Using user input to filter by job location and adding a job role.
+
+The finished code for this section;
+
+```
+from bs4 import BeautifulSoup
+import requests
+
+print("Where is your desired Location?")
+user_location = input(">> ").capitalize()
+print(f'filtering out all results not in {user_location}')
+
+
+html_text = requests.get('https://www.indeed.co.uk/jobs?q=python&sort=date').text # Asigns all html text
+soup = BeautifulSoup(html_text, 'lxml')
+jobs = soup.find_all('div', class_='jobsearch-SerpJobCard')
+for job in jobs:
+    published_date = job.find('span', class_='date').text
+    if 'Just' in published_date: 
+        company_name = job.find('span', class_='company').text # used to return just the comany name
+        skills = job.find('div', class_='jobCardReqList')
+        more_info = job.a['href']
+        job_role = job.h2.a.text
+        job_url = 'https://www.indeed.co.uk/viewjob?' + more_info[8:] 
+        job_location = job.find('span', class_='location accessible-contrast-color-location').text
+        if user_location in job_location:
+    
+            if skills == None:
+                print(f'Company Name: {company_name.strip()}')
+                print(f'Role Name: {job_role.strip()}')
+                print(f'Required Skills: None specified')
+                print(f'More Info: {job_url}')
+
+            else:
+                print(f'Company Name: {company_name.strip()}')
+                print(f'Required Skills: {skills.strip()}')
+                print(f'More Info: {job_url}')
+                print(f'Role Name: {job_role.strip()}')
+            
+        print(' ')
+```
+Added or edited code;
+
+```
+print("Where is your desired Location?")
+user_location = input(">> ").capitalize()
+print(f'filtering out all results not in {user_location}')
+```
+```
+        more_info = job.a['href']
+        job_role = job.h2.a.text
+        job_url = 'https://www.indeed.co.uk/viewjob?' + more_info[8:] 
+        job_location = job.find('span', class_='location accessible-contrast-color-location').text
+        if user_location in job_location:
+```
+
+- First, we added the print statements and user input statements. This will be used later on in the code to filter our results. 
+- Later in the code `job_role` variable is created and assigned to the tag which contains the job role.
+- Next, `job_location` is defined and is assigned to the tag in which the job location is defined. 
+- The an `if` statement is used to see if the user's input is in the `job_location` string. 
