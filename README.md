@@ -296,3 +296,101 @@ print(f'filtering out all results not in {user_location}')
 - Later in the code `job_role` variable is created and assigned to the tag which contains the job role.
 - Next, `job_location` is defined and is assigned to the tag in which the job location is defined. 
 - The an `if` statement is used to see if the user's input is in the `job_location` string. 
+
+* * * 
+**Part 7: Writing to a file and automating the script**
+
+Adding code to append the job listing to a text file and automating the job to run every 10 minutes. 
+
+The finished code;	
+
+```
+from bs4 import BeautifulSoup
+import requests
+import time
+
+print("Where is your desired Location?")
+user_location = input(">> ").capitalize()
+print(f'filtering out all results not in {user_location}\n')
+
+def find_jobs():
+    html_text = requests.get('https://www.indeed.co.uk/jobs?q=python&sort=date').text # Asigns all html text
+    soup = BeautifulSoup(html_text, 'lxml')
+    jobs = soup.find_all('div', class_='jobsearch-SerpJobCard')
+    for index, job in enumerate(jobs):
+        published_date = job.find('span', class_='new').text
+        if 'new' in published_date: 
+            company_name = job.find('span', class_='company').text # used to return just the company name
+            skills = job.find('div', class_='jobCardReqList')
+
+            # Section below used to get url
+            more_info = job.a['href']
+            job_role = job.h2.a.text
+            job_url = 'https://www.indeed.co.uk/viewjob?' + more_info[8:] 
+
+            # Section below used to get job location and filter by it
+            job_location = job.find('span', class_='location accessible-contrast-color-location').text
+            if user_location in job_location:
+                with open(f'posts/{index}.txt', 'w') as f:
+        
+                    if skills == None:
+                        f.write(f'Company Name: {company_name.strip()}\n')
+                        f.write(f'Role: {job_role.strip()}\n')
+                        f.write(f'Required Skills: None specified\n')
+                        f.write(f'More Info: {job_url}\n')
+
+                    else:
+                        f.write(f'Company Name: {company_name.strip()}\n')
+                        f.write(f'Required Skills: {skills.strip()}\n')
+                        f.write(f'More Info: {job_url}\n')
+                        f.write(f'Role Name: {job_role.strip()}\n')
+                print(f"File saved: {index}\n")
+
+if __name__ == "__main__":
+    while True:
+        find_jobs()
+        time_wait = 10
+        print(f"Waiting {time_wait} minutes...")
+        time.sleep(time_wait * 60)
+```
+
+Newly added or edited code;
+
+```
+from bs4 import BeautifulSoup
+import requests
+import time
+```
+`for index, job in enumerate(jobs):`
+```
+ with open(f'posts/{index}.txt', 'w') as f:
+        
+                    if skills == None:
+                        f.write(f'Company Name: {company_name.strip()}\n')
+                        f.write(f'Role: {job_role.strip()}\n')
+                        f.write(f'Required Skills: None specified\n')
+                        f.write(f'More Info: {job_url}\n')
+
+                    else:
+                        f.write(f'Company Name: {company_name.strip()}\n')
+                        f.write(f'Required Skills: {skills.strip()}\n')
+                        f.write(f'More Info: {job_url}\n')
+                        f.write(f'Role Name: {job_role.strip()}\n')
+                print(f"File saved: {index}\n")
+
+if __name__ == "__main__":
+    while True:
+        find_jobs()
+        time_wait = 10
+        print(f"Waiting {time_wait} minutes...")
+        time.sleep(time_wait * 60)
+```
+
+- First, `time` is imported. This will be used late for automation
+- the next line that's changed is the first for loop. We add `index` and `enumerate()`.
+	- `enumerate()` assigns an index for each item in an iterable list, for this, we need to add `index` in the for loop. The index can then be referenced.
+- `with open` is then used to open a file in a folder that's been created. We then use the `index` to give the text file a name.
+- The `print` statements are then changed for `f.write` statements. 
+- A `__name__ == '__main__' is then used along with a while loop to run the code every x amount of time.
+- `time_wait` is used to specify a time in minutes 
+- `time.sleep` is then used with `time_wait` and the multiplication operator to make sure the script runs every ten minutes.
